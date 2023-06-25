@@ -5,6 +5,7 @@ import morgan from "morgan";
 
 import reservationRouter from "./routes/reservation";
 import authRouter from "./routes/auth";
+import hotelRouter from "./routes/hotel";
 
 dotenv.config();
 
@@ -19,8 +20,9 @@ const port = process.env.PORT;
 app.use(express.json());
 app.use(morgan("dev"));
 
-app.use("/api/reservation", reservationRouter);
 app.use("/api/auth", authRouter);
+app.use("/api/reservation", reservationRouter);
+app.use("/api/hotel", hotelRouter);
 
 app.listen(port, () => {
   console.log(`⚡️ [server]: Server is running at http://localhost:${port}`);

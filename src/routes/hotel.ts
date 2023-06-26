@@ -12,12 +12,12 @@ router.post(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const hotel2Save = { ...req.body } as IHotel;
-      const hotel = new Hotel(hotel2Save);
-      await hotel.save();
+      const hotel = await new Hotel(hotel2Save).save();
       return res.status(200).json(hotel);
     } catch (error) {
       next(error);
     }
   }
 );
+
 export default router;

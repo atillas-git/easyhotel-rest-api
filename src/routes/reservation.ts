@@ -1,4 +1,5 @@
 import { IReservation } from "../interfaces/IReservation";
+import { authorize } from "../middlewares/authorize";
 
 import {
   deleteReservationById,
@@ -9,6 +10,8 @@ import {
 import express, { Request, Response, NextFunction, Router } from "express";
 
 const router: Router = express.Router();
+
+router.use(authorize);
 
 router.post(
   "/saveReservation",

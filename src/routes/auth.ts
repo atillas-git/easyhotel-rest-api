@@ -40,7 +40,7 @@ router.post(
   "/login",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const employee2Login = { ...req.body } as IEmployee;
+      const employee2Login = { ...req.body } as Partial<IEmployee>;
       if (!employee2Login.email || !employee2Login.password) {
         return res.status(400).json("Please provide the necessary fields !");
       }
@@ -62,7 +62,9 @@ router.post(
         hotelId: employee.hotelId,
       };
       const token = generateToken(payload);
-      return res.status(200).json({ access_token: token });
+      return res
+        .status(200)
+        .json({ access_token: token, email: employee.email, id: employee.id });
     } catch (error) {
       next(error);
     }

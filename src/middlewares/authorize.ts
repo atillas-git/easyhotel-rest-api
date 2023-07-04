@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { verifyToken } from "../utils/jwt";
 import { JwtPayload } from "jsonwebtoken";
 
-interface CustomRequest extends Request {
+export interface CustomRequest extends Request {
   user: string | JwtPayload;
 }
 

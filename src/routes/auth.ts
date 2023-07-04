@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import { IEmployee } from "../interfaces/IEmployee";
 import Employee from "../models/Employee";
 import { generateToken } from "../utils/jwt";
+import { CustomRequest, authorize } from "../middlewares/authorize";
 
 const router: Router = express.Router();
 
@@ -67,6 +68,26 @@ router.post(
         .json({ access_token: token, email: employee.email, id: employee.id });
     } catch (error) {
       next(error);
+    }
+  }
+);
+
+router.post(
+  "/checkUserAuthentication",
+  authorize,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const user: any = (req as CustomRequest).user;
+      if (!user) {
+        return res.status(403).json("Unauthorized !");
+      }
+      const employee = await Employee.findById(user._id);
+      if (!employee) {
+        return res.status(403).json("Unauthorized !");
+      }
+      return res.status(200).json("Authorized !");
+    } catch (error) {
+      return next(error);
     }
   }
 );

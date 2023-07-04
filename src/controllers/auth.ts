@@ -11,7 +11,10 @@ export const register = async (
   next: NextFunction
 ) => {
   try {
-    const employee2Register = { ...req.body } as IEmployee;
+    const employee2Register = { ...req.body } as Omit<
+      IEmployee,
+      "firstResult" | "maxResult" | "policies" | "sort"
+    >;
     if (!employee2Register.email || !employee2Register.password) {
       return res.status(400).json("Please provide the necessary fields !");
     }

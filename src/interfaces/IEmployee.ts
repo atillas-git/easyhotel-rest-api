@@ -10,4 +10,7 @@ export interface IEmployee {
   policies?: string[];
   firstResult?: number;
   maxResult?: number;
+  createdAt?: NativeDate;
+  updatedAt?: NativeDate;
+  sort?: "ASC" | "DESC" | string;
 }

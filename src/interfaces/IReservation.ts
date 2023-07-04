@@ -14,8 +14,8 @@ export interface IReservation {
   guests?: string[];
   paidAmount?: number;
   note?: string;
-  firstResult?:number;
-  maxResult?:number;
+  firstResult?: number;
+  maxResult?: number;
   createdAt?: NativeDate;
   updatedAt?: NativeDate;
 }

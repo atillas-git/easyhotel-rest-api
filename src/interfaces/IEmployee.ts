@@ -7,4 +7,7 @@ export interface IEmployee {
   telNo: string;
   sex: string;
   country: string;
+  policies?:string [];
+  firstResult?:number;
+  maxResult?:number;
 }

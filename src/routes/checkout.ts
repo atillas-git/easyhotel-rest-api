@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import express, { Request, Response, NextFunction } from "express";
 import CheckIn from "../models/CheckIn";
 import Reservation from "../models/Reservation";
-import { ICheckIn } from "../interfaces/ICheckIn";
+import { ICheckOut } from "../interfaces/ICheckOut";
 import { searchQuery } from "../utils/searchQuery";
 import { authorize } from "../middlewares/authorize";
 import CheckOut from "../models/CheckOut";
@@ -12,14 +12,14 @@ const router = express.Router();
 router.use(authorize);
 
 router.get(
-  "/getCheckIn/:id",
+  "/getCheckOut/:id",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const checkInId = req.params.id;
-      if (!mongoose.Types.ObjectId.isValid(checkInId)) {
+      const checkOutId = req.params.id;
+      if (!mongoose.Types.ObjectId.isValid(checkOutId)) {
         return res.status(400).json("Invalid checkin Id !");
       }
-      const doc = await CheckIn.findById(checkInId);
+      const doc = await CheckOut.findById(checkOutId);
       if (!doc) {
         return res.status(404).json("Not Found !");
       }
@@ -31,17 +31,17 @@ router.get(
 );
 
 router.post(
-  "/searchCheckIn",
+  "/searchCheckOut",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const checkIn = req.body as ICheckIn;
-      let queryArray = searchQuery<ICheckIn>(checkIn);
-      const ref = CheckIn.find().or(queryArray);
-      if (checkIn.firstResult) {
-        ref.skip(checkIn.firstResult);
+      const checkOut = req.body as ICheckOut;
+      let queryArray = searchQuery<ICheckOut>(checkOut);
+      const ref = CheckOut.find().or(queryArray);
+      if (checkOut.firstResult) {
+        ref.skip(checkOut.firstResult);
       }
-      if (checkIn.maxResult) {
-        ref.limit(checkIn.maxResult);
+      if (checkOut.maxResult) {
+        ref.limit(checkOut.maxResult);
       }
       const docs = await ref;
       return res.status(200).json(docs);
@@ -52,21 +52,20 @@ router.post(
 );
 
 router.post(
-  "/saveCheckIn",
+  "/saveCheckOut",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const checkIn = req.body as Omit<
-        ICheckIn,
+      const checkOut = req.body as Omit<
+        ICheckOut,
         "firstResult" | "maxResult" | "sort"
       >;
-      if (!mongoose.Types.ObjectId.isValid(checkIn.reservationId)) {
+      if (!mongoose.Types.ObjectId.isValid(checkOut.reservationId)) {
         return res.status(400).json("Invalid reservationId !");
       }
-      const reservation = await Reservation.findById(checkIn.reservationId);
-      if (reservation) {
-        return res.status(400).json("Reservation already in use !");
+      if (!mongoose.Types.ObjectId.isValid(checkOut.checkInId)) {
+        return res.status(400).json("Invalid checkInId !");
       }
-      await new CheckIn(checkIn).save();
+      await new CheckOut(checkOut).save();
       return res.status(200).json("Saved Successfully !");
     } catch (error) {
       next(error);
@@ -75,20 +74,17 @@ router.post(
 );
 
 router.put(
-  "/updateCheckIn",
+  "/updateCheckOut",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const checkIn = req.body as Omit<
-        ICheckIn,
-        "firstResult" | "maxResult" | "sort" | "reservationId"
+      const checkOut = req.body as Omit<
+        ICheckOut,
+        "firstResult" | "maxResult" | "sort" | "reservationId" | "checkInId"
       >;
-      if (!checkIn._id) {
+      if (!checkOut._id) {
         return res.status(400).json("Id is required!");
       }
-      if (!mongoose.Types.ObjectId.isValid(checkIn._id)) {
-        return res.status(400).json("Invalid reservationId !");
-      }
-      await CheckIn.findByIdAndUpdate(checkIn._id, checkIn);
+      await CheckOut.findByIdAndUpdate(checkOut._id, checkOut);
       return res.status(200).json("Updated Successfully!");
     } catch (error) {
       next(error);
@@ -97,23 +93,17 @@ router.put(
 );
 
 router.delete(
-  "/deleteCheckIn/:id",
+  "/deleteCheckOut/:id",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const checkInId = req.params.id;
-      if (!mongoose.Types.ObjectId.isValid(checkInId)) {
+      const checkOutId = req.params.id;
+      if (!mongoose.Types.ObjectId.isValid(checkOutId)) {
         return res.status(400).json("Invalid checkin Id !");
       }
-      const checkOut = await CheckOut.find({ checkInId: checkInId });
-      if (!checkOut) {
-        return res.status(400).json("Please checkout first !");
-      }
-      await CheckIn.findByIdAndDelete(checkInId);
+      await CheckIn.findByIdAndDelete(checkOutId);
       return res.status(200).json("Deleted successfully !");
     } catch (error) {
       next(error);
     }
   }
 );
-
-export default router;

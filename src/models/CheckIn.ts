@@ -3,43 +3,16 @@ const { Schema } = mongoose;
 const checkInSchema = new Schema(
   {
     reservationId: {
-      type: String,
+      type: mongoose.Types.ObjectId,
       required: true,
       unique: true,
-    },
-    voucherNo: {
-      type: Number,
-    },
-    checkIn: {
-      type: Date,
-      required: true,
-    },
-    noOfRooms: {
-      type: Number,
-      default: 1,
-      required: true,
-    },
-    roomNumber: {
-      type: String,
-    },
-    agencyId: {
-      type: String,
     },
     desc: {
       type: String,
     },
-    paymentType: {
-      type: String,
-      required: true,
-    },
     noOfOccupants: {
       type: Number,
       default: 1,
-      required: true,
-    },
-    noOfKids: {
-      type: Number,
-      default: 0,
       required: true,
     },
     guests: {
@@ -47,7 +20,6 @@ const checkInSchema = new Schema(
       default: [],
       required: true,
     },
-    paidAmount: Number,
     note: String,
   },
   { timestamps: true }

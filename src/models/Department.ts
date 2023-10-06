@@ -2,10 +2,13 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 const departmentSchema = new Schema(
   {
+    hotelId: {
+      type: String,
+      reqired: true,
+    },
     name: {
       type: String,
       reqired: true,
-      unique: true,
     },
     manager: {
       type: Schema.Types.ObjectId,
@@ -14,6 +17,10 @@ const departmentSchema = new Schema(
     desc: {
       type: String,
       required: true,
+    },
+    policies: {
+      type: [mongoose.Types.ObjectId],
+      default: [],
     },
   },
   { timestamps: true }

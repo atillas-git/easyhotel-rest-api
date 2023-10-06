@@ -1,4 +1,6 @@
-export interface IEmployee {
+import { IBase } from "./IBase";
+
+export interface IEmployee extends IBase {
   _id?: string;
   hotelId: string;
   name: string;
@@ -7,10 +9,8 @@ export interface IEmployee {
   telNo: string;
   sex: string;
   country: string;
+  isRoot?: boolean;
   policies?: string[];
-  firstResult?: number;
-  maxResult?: number;
   createdAt?: NativeDate;
   updatedAt?: NativeDate;
-  sort?: "ASC" | "DESC" | string;
 }

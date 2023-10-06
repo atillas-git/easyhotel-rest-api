@@ -8,6 +8,6 @@ router.post("/register", register);
 
 router.post("/login", login);
 
-router.post("/checkUserAuthentication", authorize, checkUserAuthentication);
+router.post("/user", authorize, checkUserAuthentication);
 
 export default router;

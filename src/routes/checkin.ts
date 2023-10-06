@@ -11,24 +11,21 @@ const router = express.Router();
 
 router.use(authorize);
 
-router.get(
-  "/getCheckIn/:id",
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const checkInId = req.params.id;
-      if (!mongoose.Types.ObjectId.isValid(checkInId)) {
-        return res.status(400).json("Invalid checkin Id !");
-      }
-      const doc = await CheckIn.findById(checkInId);
-      if (!doc) {
-        return res.status(404).json("Not Found !");
-      }
-      return res.status(200).json(doc);
-    } catch (error) {
-      next(error);
+router.get("/:id", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const checkInId = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(checkInId)) {
+      return res.status(400).json("Invalid checkin Id !");
     }
+    const doc = await CheckIn.findById(checkInId);
+    if (!doc) {
+      return res.status(404).json("Not Found !");
+    }
+    return res.status(200).json(doc);
+  } catch (error) {
+    next(error);
   }
-);
+});
 
 router.post(
   "/searchCheckIn",
@@ -51,53 +48,47 @@ router.post(
   }
 );
 
-router.post(
-  "/saveCheckIn",
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const checkIn = req.body as Omit<
-        ICheckIn,
-        "firstResult" | "maxResult" | "sort"
-      >;
-      if (!mongoose.Types.ObjectId.isValid(checkIn.reservationId)) {
-        return res.status(400).json("Invalid reservationId !");
-      }
-      const reservation = await Reservation.findById(checkIn.reservationId);
-      if (reservation) {
-        return res.status(400).json("Reservation already in use !");
-      }
-      await new CheckIn(checkIn).save();
-      return res.status(200).json("Saved Successfully !");
-    } catch (error) {
-      next(error);
+router.post("/", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const checkIn = req.body as Omit<
+      ICheckIn,
+      "firstResult" | "maxResult" | "sort"
+    >;
+    if (!mongoose.Types.ObjectId.isValid(checkIn.reservationId)) {
+      return res.status(400).json("Invalid reservationId !");
     }
+    const reservation = await Reservation.findById(checkIn.reservationId);
+    if (reservation) {
+      return res.status(400).json("Reservation already in use !");
+    }
+    await new CheckIn(checkIn).save();
+    return res.status(200).json("Saved Successfully !");
+  } catch (error) {
+    next(error);
   }
-);
+});
 
-router.put(
-  "/updateCheckIn",
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const checkIn = req.body as Omit<
-        ICheckIn,
-        "firstResult" | "maxResult" | "sort" | "reservationId"
-      >;
-      if (!checkIn._id) {
-        return res.status(400).json("Id is required!");
-      }
-      if (!mongoose.Types.ObjectId.isValid(checkIn._id)) {
-        return res.status(400).json("Invalid reservationId !");
-      }
-      await CheckIn.findByIdAndUpdate(checkIn._id, checkIn);
-      return res.status(200).json("Updated Successfully!");
-    } catch (error) {
-      next(error);
+router.put("/", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const checkIn = req.body as Omit<
+      ICheckIn,
+      "firstResult" | "maxResult" | "sort" | "reservationId"
+    >;
+    if (!checkIn._id) {
+      return res.status(400).json("Id is required!");
     }
+    if (!mongoose.Types.ObjectId.isValid(checkIn._id)) {
+      return res.status(400).json("Invalid reservationId !");
+    }
+    await CheckIn.findByIdAndUpdate(checkIn._id, checkIn);
+    return res.status(200).json("Updated Successfully!");
+  } catch (error) {
+    next(error);
   }
-);
+});
 
 router.delete(
-  "/deleteCheckIn/:id",
+  "/:id",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const checkInId = req.params.id;

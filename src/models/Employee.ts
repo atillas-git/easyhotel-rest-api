@@ -10,6 +10,9 @@ const employeeSchema = new Schema(
       type: String,
       required: true,
     },
+    departmentId: {
+      type: mongoose.Types.ObjectId,
+    },
     email: {
       type: String,
       required: true,
@@ -30,6 +33,14 @@ const employeeSchema = new Schema(
     country: {
       type: String,
       required: true,
+    },
+    isRoot: {
+      type: Boolean,
+      default: false,
+    },
+    policies: {
+      type: [mongoose.Types.ObjectId],
+      default: [],
     },
   },
   { timestamps: true }

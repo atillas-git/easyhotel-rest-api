@@ -69,7 +69,12 @@ export const login = async (
     const token = generateToken(payload);
     return res
       .status(200)
-      .json({ access_token: token, email: employee.email, id: employee.id });
+      .json({
+        access_token: token,
+        email: employee.email,
+        id: employee.id,
+        hotelId: employee.hotelId,
+      });
   } catch (error) {
     next(error);
   }

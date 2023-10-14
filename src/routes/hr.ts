@@ -4,6 +4,7 @@ import { IEmployee } from "../interfaces/IEmployee";
 import mongoose from "mongoose";
 import { IDepartment } from "../interfaces/IDepartment";
 import Department from "../models/Department";
+import { searchQuery } from "../utils/searchQuery";
 
 const router: Router = express.Router();
 
@@ -83,25 +84,20 @@ router.post(
   "/employee/search",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { firstResult, maxResult, sort, ...employee } =
-        req.body as IEmployee;
-      let queryArray: Partial<IEmployee>[] = [];
-      Object.keys(employee).forEach((key: string) => {
-        queryArray.push({
-          [key]:
-            employee[
-              key as keyof Omit<IEmployee, "firstResult" | "maxResult" | "sort">
-            ],
-        });
-      });
-      const ref = Employee.find().or(queryArray);
+      const { hotelId, firstResult, maxResult, ...other } =
+        req.body as Partial<IEmployee>;
+      let queryArray = searchQuery(other);
+      const ref = Employee.find({ hotelId: hotelId });
+      if (queryArray.length > 0) {
+        ref.or(queryArray);
+      }
       if (firstResult) {
         ref.skip(firstResult);
       }
       if (maxResult) {
         ref.limit(maxResult);
       }
-      const docs = await ref;
+      const docs = await ref.exec();
       return res.status(200).json(docs);
     } catch (error) {
       next(error);
@@ -127,6 +123,30 @@ router.post(
       const newD = new Department(deparment2Save);
       await newD.save();
       return res.status(200).json("Success!");
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+router.post(
+  "/department/search",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const deparment2Search = { ...req.body } as Partial<IDepartment>;
+      let queryArray = searchQuery(deparment2Search);
+      const ref = Department.find();
+      if (queryArray.length > 0) {
+        ref.or(queryArray);
+      }
+      if (deparment2Search.firstResult) {
+        ref.skip(deparment2Search.firstResult);
+      }
+      if (deparment2Search.maxResult) {
+        ref.limit(deparment2Search.maxResult);
+      }
+      const docs = await ref;
+      return res.status(200).json(docs);
     } catch (error) {
       next(error);
     }
